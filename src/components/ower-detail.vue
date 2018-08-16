@@ -103,11 +103,11 @@ export default {
 	data() {
 		return {
             wxTitle: "RRT通证详情",
-            maskShow: false,
             isPoor: false,
             isReward: false,
+            maskShow: false,
             num: 0,
-            to_addr: '',
+            to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
             mark: ''
 		};
     },
@@ -136,7 +136,6 @@ export default {
         }
     },
     created() {
-        console.log('wd......', this.$route)
         // 获取详情
         this.$store.dispatch('getTokenDetail', {
             id: this.getDetailId
@@ -166,10 +165,10 @@ export default {
                 alert('地址不能为空');
                 return;
             }
-            if(this.withdrawFee > this.tokenDetail.totalOwner) {
-                alert('余额不足');
-                return;
-            }
+            // if(this.withdrawFee > this.tokenDetail.totalOwner) {
+            //     alert('余额不足');
+            //     return;
+            // }
             this.$store.dispatch('getWithdraw', {
                 _id: this.getDetailId,
                 to_addr: this.to_addr,

@@ -24,6 +24,20 @@ export const getAuth = ({commit}) => {
     });
 }
 
+// 获取指定的用户信息
+export const getOthers = ({dispatch, commit, state}, params) => {
+    return new Promise((resolve, reject) => {
+        axios.get(`${host}/user/${params.uid}`, {
+            headers: {
+                'Authorization': 'Bearer ' + state.token
+            },
+        }).then(res => {
+            resolve(res.data);
+        })
+    });
+    // 获取费用信息
+}
+
 // 获取用户信息
 export const getUser = ({dispatch, commit, state}) => {
     return new Promise((resolve, reject) => {

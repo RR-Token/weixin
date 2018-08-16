@@ -26,7 +26,7 @@
                 <div class="meun">
                     <div @click="getMoney"></div>
                     <!-- <div></div> -->
-                    <router-link tag="div" :to="{path: '/qrcode/', query:{tokenid: getDetailId}}"></router-link>
+                    <router-link tag="div" :to="{path: '/qrcode/', query:{tid: getDetailId, uid: userInfo && userInfo._id}}"></router-link>
                     <div></div>
                 </div>
 
@@ -63,12 +63,12 @@
 
                             <div class="msg2" v-else>
                                 <div class="form">
-                                    <input type="text" placeholder="请输入收款人钱包地址">
-                                    <input type="text" placeholder="请输入备注">
+                                    <input v-model="to_addr" type="text" placeholder="请输入收款人钱包地址">
+                                    <input v-model="mark" type="text" placeholder="请输入备注">
                                 </div>
                                 <div class="btn">
-                                    <div class="btn-default">确定</div>
-                                    <div class="tips">本次转出消耗  100RRT（<span class="light">余额1000</span>）</div>
+                                    <div class="btn-default" @click="getCoin">确定</div>
+                                    <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ tokenDetail.totalOwner }}</span>）</div>
                                 </div>
                             </div>
 
@@ -89,10 +89,15 @@ export default {
 		return {
             wxTitle: "通证详情",
             maskShow: false,
-            isPoor: false
+            isPoor: false,
+            to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
+            mark: ''
 		};
     },
     computed: {
+        userInfo() {
+            return this.$store.state.loginUser;
+        },
         tokenDetail() {
             return this.$store.state.tokenDetail || '';
         },
@@ -107,11 +112,16 @@ export default {
         },
         rrt_id() {
             return this.tokenDetail.rrt_id && this.tokenDetail.rrt_id.substring(0,7);
+        },
+        withdrawFee() {
+            return this.$store.state.fee && this.$store.state.fee.WithdrawFee && this.$store.state.fee.WithdrawFee.amount;
         }
     },
     created() {
         this.$store.dispatch('getTokenDetail', {
             id: this.getDetailId
+        }).then(res => {
+            this.$store.dispatch('getReward');
         });
     },
 	methods: {
@@ -120,6 +130,28 @@ export default {
         },
         getMoney() {
             this.maskShow = true;
+        },
+        
+        getCoin() {
+            // 地址不能为空
+            if(this.to_addr === '') {
+                alert('地址不能为空');
+                return;
+            }
+            // if(this.withdrawFee > this.tokenDetail.totalOwner) {
+            //     alert('余额不足');
+            //     return;
+            // }
+            this.$store.dispatch('getWithdraw', {
+                _id: this.getDetailId,
+                to_addr: this.to_addr,
+                amount: this.withdrawFee,
+                // amount: 1,
+                mark: this.mark
+            }).then(res => {
+                console.log(res)
+                this.close();
+            })
         }
 	}
 };

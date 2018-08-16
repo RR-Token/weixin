@@ -10,8 +10,14 @@ export default {
 	name: "app",
 	created() {
 		// 应用启动的时候判断是否有缓存的hash，如果有，说明是分享进来的，那么久跳转过去，然后清空hash
-		if(window.location.hash === '#/senddetail') {
-			// this.$router.push('/detail')
+		if(window.localStorage.getItem('RRT_HASH_SHARE_PAGE')) {
+			console.log('转了', window.localStorage.getItem('RRT_HASH_SHARE_PAGE'))
+			history.replaceState({
+				key: 'share entry'
+			}, 'catch token', window.localStorage.getItem('RRT_HASH_SHARE_PAGE'))
+			window.localStorage.removeItem('RRT_HASH_SHARE_PAGE');
+		} else {
+			console.log('没转')
 		}
 		// 再获取登录信息
 		this.$store.dispatch('getUser');

@@ -23,15 +23,19 @@ export default {
     created() {
         console.log(this.$route)
         this.$store.dispatch('getQR', {
-            tokenid: this.getDetailId
+            tokenid: this.getParams.tid
         }).then(res => {
-            console.log(res);
             this.qrUrl = res.qrcodeurl;
+        });
+        this.$store.dispatch('getOthers', {
+            uid: this.getParams.uid
+        }).then(res => {
+            console.log('qr-code>>>>>>>', res);
         });
     },
     computed: {
-        getDetailId() {
-            return this.$route.query.tokenid;
+        getParams() {
+            return this.$route.query;
         },
     },
 	methods: {

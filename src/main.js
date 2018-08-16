@@ -23,6 +23,7 @@ let _search = window.location.search
 
 // 分享进来的url，如果不是授权url，就缓存起来，授权成功后跳转
 if (!_s_tag && _h_tag) {
+	console.log('有hash', router);
 	window.localStorage.setItem('RRT_HASH_SHARE_PAGE', _hash);
 }
 

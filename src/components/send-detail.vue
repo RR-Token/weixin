@@ -5,8 +5,8 @@
 			<scroller>
 				
                 <div class="header">
-                    <div class="photo" :style="'backgroundImage:url('+ userInfo.headimgurl +''"></div>
-                    <div class="name">{{ userInfo.nickname }}</div>
+                    <div class="photo" :style="'backgroundImage:url('+ headimgurl +''"></div>
+                    <div class="name">{{ detail && detail.username }}</div>
 				</div>
                 
                 <div class="info">
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="box">
-                    <div>
+                    <div @click="getRewardMoney">
                         <div>0 元</div>
                         <div>1 RRT Token</div>
                     </div>
@@ -45,6 +45,28 @@
             <div>我也要发通证</div>
         </router-link>
 
+         <!-- mask -->
+        <div class="mask" v-if="maskShow">
+            <div class="msg">
+                <div>
+
+                    <div class="top">
+                        <span>恭喜！</span>
+                    </div>
+                    <div class="bottom">
+                        <div class="msg2 msg2-1">
+                            您获得了{{ num }}个{{ tokenDetail.name }}通证
+                            <div class="btn">
+                                <div class="btn-default" @click="close">确定</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div v-if="!isReward" class="close" @click="close"></div>
+            </div>
+        </div>
+
 	</div>
 </template>
 
@@ -54,20 +76,51 @@ export default {
 	data() {
 		return {
             wxTitle: "通证发放详情",
+            detail: null,
+            maskShow: false,
+            num: 0,
 		};
     },
     computed: {
-        userInfo() {
-            return this.$store.state.loginUser;
+        tokenDetail() {
+            return this.$store.state.tokenDetail || '';
         },
         queryData() {
             return this.$route.query;
+        },
+        headimgurl() {
+            return this.detail && this.detail.headimgurl;
         }
     },
     created() {
         console.log('!!!!!!!!!!!!!!!!!!', this.queryData)
+        // 获取用户信息
+        let self = this;
+        this.$store.dispatch('getOthers', {
+            uid: this.queryData.uid
+        }).then(res => {
+            console.log(res)
+            self.detail = res;
+        });
+
+        // 获取奖励
+        this.$store.dispatch('getTokenDetail', {
+            id: this.queryData.tid
+        }).then(res => {
+            this.$store.dispatch('getReward');
+        });
     },
 	methods: {
+        close() {
+			this.maskShow = false;
+        },
+        getRewardMoney() {
+            // 获取通证奖励
+            this.$store.dispatch('getRewardEarn').then(res => {
+                this.num = res.earned;
+                this.maskShow = true;
+            });
+        }
 	}
 };
 </script>
@@ -231,5 +284,94 @@ export default {
             height: 41px;
             line-height: 41px;
         }
+    }
+    .mask {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .msg {
+            width: 80%;
+            .close {
+                width: 32px;
+                height: 32px;
+                border-radius: 100%;
+                background-color: transparent;
+                background-image: url('~@/assets/close.png');
+                background-position: center;
+                background-size: cover;
+                margin: 29px auto;
+            }
+            >div {
+                width: 100%;
+                border-radius: 9px;
+                overflow: hidden;
+                .top {
+                    width: 100%;
+                    height: 120px;
+                    color: #ffffff;
+                    background-image: url('~@/assets/bg.png');
+                    background-position: center;
+                    background-size: cover;
+                    font-size: 18px;
+                    span {
+                        margin-top: 42px;
+                        display: inline-block;
+                    }
+                }
+                .bottom {
+                    width: 100%;
+                    height: 240px;
+                    background: #ffffff;
+                    .msg2-1 {
+                        height: 200px;
+                        line-height: 90px;
+                        .btn {
+                            margin-top: 75px;
+                        }
+                    }
+                    .msg2 {
+                        display: inline-block;
+                        margin-top: 17.5px;
+                        width: 100%;
+                        }
+                        .btn {
+                            .light {
+                                color: #F32727;
+                            }
+                            .btn1 {
+                                background: #ffffff;
+                                color: #018FFF;
+                                border: 1px solid #018FFF;
+                                border-radius: 6px;
+                                height: 32px;
+                                line-height: 32px;
+                                font-size: 16px;
+                                width: 46.6667%;
+                                margin: 30px auto 21.5px;
+                            }
+                            .btn-default {
+                                background-color: #018FFF;
+                                border-radius: 6px;
+                                height: 32px;
+                                line-height: 32px;
+                                color: #ffffff;
+                                font-size: 16px;
+                                width: 46.6667%;
+                                margin: 30px auto 21.5px;
+                            }
+                            .tips {
+                                font-size: 13px;
+                                color: #9CA4B1;
+                            }
+                        }
+                    }
+                }
+            }
     }
 </style>
