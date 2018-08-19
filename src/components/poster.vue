@@ -6,8 +6,8 @@
         </div>
 
         <div class="person">
-            <div class="photo" :style="'backgroundImage:url('+ userInfo.headimgurl +''"></div>
-            <div class="name">{{ userInfo.username }}</div>
+            <div class="photo" :style="'backgroundImage:url('+ headimgurl +''"></div>
+            <div class="name">{{ username }}</div>
         </div>
 
         <div class="desc">
@@ -29,22 +29,30 @@ export default {
 	data() {
 		return {
             wxTitle: "我的海报",
-            qrUrl: ''
 		};
 	},
     computed: {
         userInfo() {
             return this.$store.state.loginUser;
         },
+        headimgurl() {
+            return this.userInfo && this.userInfo.headimgurl;
+        },
+        username() {
+            return this.userInfo && this.userInfo.username;
+        },
+        qrUrl() {
+            return this.$store.state.qrurl;
+        },
         tokenList() {
             return this.$store.state.tokenList || [];
         },
         fensiNum() {
             let num = 0;
-            this.tokenList.forEach(item => {
+            this.tokenList.length > 0 && this.tokenList.forEach(item => {
                 num += parseInt(item.totalOwner);
             });
-            return num;
+            return num || 0;
         },
         rank() {
             return {
@@ -54,9 +62,6 @@ export default {
         }
     },
     created() {
-        this.$store.dispatch('getQRForApp').then(res => {
-            this.qrUrl = res.qrcodeurl;
-        });
     },
 	methods: {
 	}

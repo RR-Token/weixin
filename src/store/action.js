@@ -1,16 +1,5 @@
 import axios from 'axios'
 
-/* 
-// 用于授权的apid
-let appid = 'wxad6f9eeeede1e65b'
-// 授权成功后重定向的地址
-let redirect_uri = 'https://mindflow.pro/login/rrtoken'
-// 标识
-let state = 'rrtoken-mp'
-// 登录授权链接
-let authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_userinfo&state=${state}#wechat_redirect`
- */
-
 // 获取用户信息
 let host = 'https://api.rrtoken.tech'
 
@@ -49,9 +38,6 @@ export const getUser = ({dispatch, commit, state}) => {
             // 缓存用户信息
             commit('getUser', res.data);
 
-            // 临时修改user id
-            // state.loginUser._id = '5b5ddc18a48339000f9cfb32'
-
             // 获取用户的token列表
             dispatch('getTokenList', {
                 token: state.token,
@@ -59,6 +45,12 @@ export const getUser = ({dispatch, commit, state}) => {
             });
             // 获取费用信息
             dispatch('getInfo');
+
+            dispatch('getQRForApp', {
+                id: state.loginUser._id
+            }).then(res => {
+                commit('getQRUrl', res.qrcodeurl)
+            });
             resolve();
         })
     });
@@ -265,9 +257,12 @@ export const getWithdraw = ({commit, state}, params) => {
 // 优质海报页二维码
 export const getQRForApp = ({commit, state}, params) => {
     return new Promise((resolve, reject) => {
-        axios.get(`${host}/qrcode/app`, {
+        axios.get(`${host}/qrcode`, {
             headers: {
                 'Authorization': 'Bearer ' + state.token
+            },
+            params: {
+                user: params.id
             }
         }).then(res => {
             resolve(res.data[0]);

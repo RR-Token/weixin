@@ -15,7 +15,7 @@
                                 <div class="name" v-if="userId === item.from_user._id">{{ item.from_user.pinfo.nickname }}</div>
                                 <div class="name" v-else>{{ item.to_user.pinfo.nickname }}</div>
                                 <div class="rich">
-                                    <span class="green" v-if="userId === item.from_user._id">转入</span>
+                                    <span class="green" v-if="userId !== item.from_user._id">转入</span>
                                     <span class="red" v-else>转出</span>
                                     <span>{{ item.amount }} TAT</span>
                                 </div>

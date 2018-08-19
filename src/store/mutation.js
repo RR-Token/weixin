@@ -36,6 +36,10 @@ const mutations = {
     setTokenId(state, obj) {
         // 因为现阶段只返回了一种方式
         state.tokenid = obj;
+    },
+    getQRUrl(state, obj) {
+        // 因为现阶段只返回了一种方式
+        state.qrurl = obj;
     }
 }
 

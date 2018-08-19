@@ -10,10 +10,10 @@
 				</div>
                 
                 <div class="info">
-                    <div class="number">区块号：{{ tokenDetail.issued }}</div>
+                    <div class="number">区块号：{{ rrt_id }}</div>
                     <div class="details">
                         <div>
-                            <div>地&nbsp;&nbsp;&nbsp;&nbsp;址：<span>{{ rrt_id }}...</span></div>
+                            <div>地&nbsp;&nbsp;&nbsp;&nbsp;址：<span>{{ tokenDetail.block_number }}...</span></div>
                             <div>总发行量：<span>{{ tokenDetail.supply }}</span></div>
                         </div>
                         <div>

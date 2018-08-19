@@ -6,24 +6,32 @@
         </div>
 		<div class="container">
 			<scroller 
-                v-if="isActive"
 				:on-infinite="infinite"
 				ref="my_scrooler"
 				>
-				<div v-if="isActive" class="item" v-for="(item, index) in owerList" :key="index" @click="toDetail(item.token._id)">
-                    <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
-                    <div class="name">{{ item.user.pinfo.nickname }}</div>
-                    <div class="rrt">{{ item.token.name }}</div>
-                    <div class="count">持有数量：{{ item.amount }}个</div>
-				</div>
-				<div v-else-if="userId === 'item._id'" class="item" v-for="(item, index) in owerList" :key="index" @click="toDetail(item.token._id)">
-                    <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
-                    <div class="name">{{ item.user.pinfo.nickname }}</div>
-                    <div class="rrt">{{ item.token.name }}</div>
-                    <div class="count">持有数量：{{ item.amount }}个</div>
-				</div>
+                <div style="height: 10px;"></div>
+                <!-- KOL的 -->
+                <div v-if="isActive && owerList.length" v-for="(item, index) in owerList" :key="index">
+                    <div class="item" @click="toDetail(item.token._id)">
+                        <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
+                        <div class="name">{{ item.user.pinfo.nickname }}</div>
+                        <div class="rrt">{{ item.token.name }}</div>
+                        <div class="count">持有数量：{{ item.amount }}个</div>
+                    </div>
+                    <div style="height: 10px;"></div>
+                </div>
+                <!-- 我发布的 -->
+                <div v-if="!isActive && selfList.length" v-for="(item, index) in selfList" :key="index">
+                    <div class="item" @click="toDetail(item.token._id)">
+                        <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
+                        <div class="name">{{ item.user.pinfo.nickname }}</div>
+                        <div class="rrt">{{ item.token.name }}</div>
+                        <div class="count">持有数量：{{ item.amount }}个</div>
+                    </div>
+                    <div style="height: 10px;"></div>
+                </div>
 			</scroller>
-            <div v-else class="no-data">
+            <div v-if="(isActive && owerList && owerList.length == 0) || (!isActive && selfList && selfList.length == 0)" class="no-data">
                 <img src="../assets/no_passport.png" alt="">
                 <div class="tips">发布你的专属通证，更紧密连接你的粉丝</div>
                 <router-link class="router-add" tag="div" :to="{path: '/addToken'}">发布</router-link>
@@ -62,8 +70,16 @@ export default {
         userId() {
             return this.$route.params.uid;
         },
-        owerList() {
+        list() {
             return this.$store.state.owerList;
+        },
+        owerList() {
+            return this.list
+        },
+        selfList() {
+            console.log(this.list)
+            let _arr = this.list && this.list.filter(item => item.user._id === this.userId);
+            return _arr;
         }
     },
     created() {
@@ -148,7 +164,7 @@ export default {
 			background-color: #ffffff;
 			width: calc(100% - 20px);
 			height: 170px;
-			margin: 10px 10px 6px 10px;
+			margin: 0 10px 0 10px;
 			border-radius: 8px;
             box-shadow: 6px 0px 12px rgba(1,143,255,0.08);
             .photo{

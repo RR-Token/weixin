@@ -12,7 +12,7 @@
                     <div class="others">
                         <div>发 行 方：<span>{{ tokenDetail.user && tokenDetail.user.pinfo && tokenDetail.user.pinfo.nickname }}</span></div>
                         <div>通证名称：<span>{{ tokenDetail.name }}</span></div>
-                        <div class="largeLenght">合约地址：<span>{{ tokenDetail.user && tokenDetail.user.email }}</span></div>
+                        <div class="largeLenght">合约地址：<span>{{ tokenDetail && tokenDetail.chain_addr}}</span></div>
                         <div>总发行量：<span>{{ tokenDetail.supply }}</span></div>
                         <div>我的持有数：<span class="linght">{{tokenDetail.totalOwner }} 个</span></div>
                     </div>
@@ -68,6 +68,7 @@
                     <div class="top">
                         <span v-if="!isReward && isPoor">您的RRT不足</span>
                         <span v-else-if="!isReward && !isPoor">提币到钱包</span>
+                        <span v-else-if="num==0">今日领取完毕</span>
                         <span v-else>恭喜！</span>
                     </div>
                     <div class="bottom">
@@ -82,7 +83,8 @@
                             </div>
                         </div>
                         <div v-else class="msg2 msg2-1">
-                            您获得了{{ num }}个{{ tokenDetail.name }}通证
+                            <div v-if="num==0">请明日再来领取：）</div>
+                            <div v-else>您获得了{{ num }}个{{ tokenDetail.name }}通证</div>
                             <div class="btn">
                                 <div class="btn-default" @click="close">确定</div>
                             </div>

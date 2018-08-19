@@ -1,10 +1,10 @@
 <template>
 	<div class="hello">
-
+        <div class="remoce-catch" @click="removeStore">清除缓存</div>
 		<div class="container">
 				<!-- :on-infinite="infinite" -->
 			<scroller  
-                v-if="tokenList.length > 0"
+                v-if="tokenList"
 				ref="my_scrooler"
 				>
 				<div v-for="(item, index) in tokenList" :key="index" @click="toDetail(item._id)">
@@ -17,7 +17,7 @@
                         </div>
                         <div>
                             <span>{{ item.supply }}</span>
-                            <span>{{ ((item.totalTx/item.supply)*100).toFixed(2)}}%已发放</span>
+                            <span>{{ ((item.totalTx/item.supply)*100).toFixed(2) }}%已发放</span>
                             <span>{{ item.totalOwner }}个账户持有</span>
                         </div>
                     </div>
@@ -72,6 +72,10 @@ export default {
         }
     },
 	methods: {
+        removeStore() {
+            window.localStorage.removeItem('token');
+            alert('清除缓存:'+window.localStorage.getItem('token'))
+        },
 		refresh() {
 			console.log('refresh')
 		},
@@ -109,8 +113,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
+    .remoce-catch {
+        padding: 0 15px;
+        color: red;
+        height: 44px;
+        text-align: right;
+        line-height: 44px;
+    }
 	.container {
-		height: calc(100vh - 49px);
+		height: calc(100vh - 49px - 44px);
 		background-color: rgba(242,244,248,1);
 		overflow: hidden;
 		position: relative;

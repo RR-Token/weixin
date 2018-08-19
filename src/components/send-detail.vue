@@ -10,15 +10,19 @@
 				</div>
                 
                 <div class="info">
-                    <div class="line1">赞赏即可获得我的RRT通证</div>
-                    <div class="line2">RRT通证基于区块链</div>
+                    <div class="line1">赞赏即可获得我的 {{ tokenDetail.name }} 通证</div>
+                    <div class="line2">{{ tokenDetail.name }} 通证基于区块链</div>
                     <div class="line3">是未来我的各项粉丝福利的凭证</div>
                 </div>
 
                 <div class="box">
-                    <div @click="getRewardMoney">
+                    <!-- <div @click="getRewardMoney">
                         <div>0 元</div>
                         <div>1 RRT Token</div>
+                    </div> -->
+                    <div @click="getRewardMoney">
+                        <div>点击获取更多通证</div>
+                        <div>随机获取 1-10 个通证奖励</div>
                     </div>
                     <!-- <div>
                         <div>1 元</div>
@@ -30,10 +34,10 @@
                     </div> -->
                 </div>
 
-                <div class="desc">
+                <!-- <div class="desc">
                     <div>赞赏同时，您和您的粉丝都将获得平台RRT奖励。</div>
                     <div>奖励数量为赞赏金额*0.5（奖励系数）。</div>
-                </div>
+                </div> -->
 
                 <div style="height: 10px;"></div>
 
@@ -41,7 +45,7 @@
 
 		</div>
 
-        <router-link class="add-token" tag="div" :to="{path: '/addToken'}">
+        <router-link class="add-token" tag="div" :to="{path: '/'}">
             <div>我也要发通证</div>
         </router-link>
 
@@ -55,7 +59,8 @@
                     </div>
                     <div class="bottom">
                         <div class="msg2 msg2-1">
-                            您获得了{{ num }}个{{ tokenDetail.name }}通证
+                            <div v-if="num==0">请明日再来领取：）</div>
+                            <div v-else>您获得了{{ num }}个{{ tokenDetail.name }}通证</div>
                             <div class="btn">
                                 <div class="btn-default" @click="close">确定</div>
                             </div>
@@ -112,7 +117,8 @@ export default {
     },
 	methods: {
         close() {
-			this.maskShow = false;
+            this.maskShow = false;
+            this.$router.push({path: `/ower/${this.queryData.uid}`});
         },
         getRewardMoney() {
             // 获取通证奖励
