@@ -12,7 +12,7 @@
                             <div class="photo" :style="'backgroundImage: url('+ item.user.pinfo.headimgurl +')'"></div>
                             <div class="info">
                                 <div class="name" >{{ item.user.pinfo.nickname }}</div>
-                                <div class="rich">拥有{{ item.amount }}个 RRT Token</div>
+                                <div class="rich">拥有{{ item.amount }}个 {{ item.token.symbol }}</div>
                             </div>
                         </div>
                         <div>

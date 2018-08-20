@@ -12,15 +12,15 @@
                     <div class="others">
                         <div>发 行 方：<span>{{ tokenDetail.user && tokenDetail.user.pinfo && tokenDetail.user.pinfo.nickname }}</span></div>
                         <div>通证名称：<span>{{ tokenDetail.name }}</span></div>
-                        <div class="largeLenght">合约地址：<span>{{ tokenDetail && tokenDetail.chain_addr}}</span></div>
+                        <div class="largeLenght" @click="copyAddress">合约地址：<span>{{ (tokenDetail && !tokenDetail.chain_addr && !tokenDetail.block_number) ? '上链中' : tokenDetail.chain_addr }}</span></div>
                         <div>总发行量：<span>{{ tokenDetail.supply }}</span></div>
-                        <div>我的持有数：<span class="linght">{{tokenDetail.totalOwner }} 个</span></div>
+                        <div>我的持有数：<span class="linght">{{ amount }} 个</span></div>
                     </div>
 				</div>
 
                 <div class="center-nav">
                     <div>获取更多</div>
-                    <router-link tag="div" :to="{path: `/flow/${getUserId}`}">
+                    <router-link tag="div" :to="{path: `/flow/${getUserId}/${getDetailId}`}">
                         流水详情
                     </router-link>
                 </div>
@@ -78,10 +78,12 @@
                                 <input type="text" placeholder="请输入备注" v-model="mark">
                             </div>
                             <div class="btn">
-                                <div class="btn-default" @click="getCoin">确定</div>
-                                <div class="tips">本次转出消耗  {{ withdrawFee }} RRT（<span class="light">余额{{ tokenDetail.totalOwner }}</span>）</div>
+                                <div class="btn-default" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
+                                <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ yue }}</span>）</div>
                             </div>
                         </div>
+
+                        <!-- 已经领取过的提示 -->
                         <div v-else class="msg2 msg2-1">
                             <div v-if="num==0">请明日再来领取：）</div>
                             <div v-else>您获得了{{ num }}个{{ tokenDetail.name }}通证</div>
@@ -105,15 +107,20 @@ export default {
 	data() {
 		return {
             wxTitle: "RRT通证详情",
-            isPoor: false,
             isReward: false,
             maskShow: false,
             num: 0,
-            to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
-            mark: ''
+            // to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
+            to_addr: '',
+            mark: '',
+            amount: 0,
+            yue: 0
 		};
     },
     computed: {
+        isPoor() {
+            return this.withdrawFee > this.yue ? true : false
+        },
         tokenDetail() {
             return this.$store.state.tokenDetail || '';
         },
@@ -143,9 +150,41 @@ export default {
             id: this.getDetailId
         }).then(res => {
             this.$store.dispatch('getReward');
+            // 获取余额
+            this.getYE();
+            // 获取持有数量
+            this.updateAmount();
         });
+        // 获取费用信息
+        this.$store.dispatch('getInfo');
     },
 	methods: {
+        copyAddress() {
+            // 动态创建 input 元素
+            var aux = document.createElement("input");
+
+            // 获得需要复制的内容
+            aux.setAttribute("value", this.tokenDetail.chain_addr);
+
+            // 添加到 DOM 元素中
+            document.body.appendChild(aux);
+
+            // 执行选中
+            // 注意: 只有 input 和 textarea 可以执行 select() 方法.
+            aux.select();
+            
+            // 获得选中的内容
+            var content = window.getSelection().toString();
+                
+            // 执行复制命令
+            document.execCommand("copy");
+
+            // 将 input 元素移除
+            document.body.removeChild(aux);
+
+            // 提示
+            alert('已复制')
+        },
         close() {
 			this.maskShow = false;
         },
@@ -159,18 +198,25 @@ export default {
             this.$store.dispatch('getRewardEarn').then(res => {
                 this.num = res.earned;
                 this.maskShow = true;
+                // 更新余额
+                this.updateAmount();
             });
         },
         getCoin() {
+            // 如果余额不足，引导去赚取token的页面
+            if(this.isPoor) {
+                this.$route.push({path: ``})
+                return;
+            }
             // 地址不能为空
             if(this.to_addr === '') {
                 alert('地址不能为空');
                 return;
             }
-            // if(this.withdrawFee > this.tokenDetail.totalOwner) {
-            //     alert('余额不足');
-            //     return;
-            // }
+            if(this.withdrawFee > this.yue) {
+                alert('余额不足');
+                return;
+            }
             this.$store.dispatch('getWithdraw', {
                 _id: this.getDetailId,
                 to_addr: this.to_addr,
@@ -178,9 +224,26 @@ export default {
                 // amount: 1,
                 mark: this.mark
             }).then(res => {
-                console.log(res)
+                // 更新余额
+                this.updateAmount();
                 this.close();
             })
+        },
+        getYE() {
+            // 获取余额
+            this.$store.dispatch('getBalance', {
+                symbol: 'RRT'
+            }).then(res => {
+                this.yue = res.amount;
+            });
+        },
+        updateAmount() {
+            // 获取持有数量
+            this.$store.dispatch('getBalance', {
+                symbol: this.tokenDetail.symbol
+            }).then(res => {
+                this.amount = res.amount;
+            });
         }
 	}
 };

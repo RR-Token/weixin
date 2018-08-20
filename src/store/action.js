@@ -115,9 +115,7 @@ export const getBalance = ({commit, state}, params) => {
             headers: {
                 'Authorization': 'Bearer ' + state.token
             },
-            params: {
-                symbol: 'RRT'
-            }
+            params: params
         }).then(res => {
             commit('setTokenId', res.data[0]._id);
             axios.get(`${host}/balance`, {
@@ -162,9 +160,7 @@ export const getOwerList = ({commit, state}, params) => {
             headers: {
                 'Authorization': 'Bearer ' + state.token
             },
-            params: {
-                user: params.uid
-            }
+            params: params
         }).then(res => {
             commit('getOwerList', res.data);
             resolve();
@@ -180,7 +176,8 @@ export const getFlow = ({commit, state}, params) => {
                 'Authorization': 'Bearer ' + state.token
             },
             params: {
-                user: params.uid
+                user: params.user,
+                token: params.token
             }
         }).then(res => {
             commit('getFlow', res.data);

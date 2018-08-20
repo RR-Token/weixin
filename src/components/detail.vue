@@ -10,7 +10,7 @@
 				</div>
                 
                 <div class="info">
-                    <div class="number">区块号：{{ rrt_id }}</div>
+                    <div class="number" @click="copyAddress">区块号：{{ chain_addr }}</div>
                     <div class="details">
                         <div>
                             <div>地&nbsp;&nbsp;&nbsp;&nbsp;址：<span>{{ tokenDetail.block_number }}...</span></div>
@@ -56,7 +56,7 @@
                                     <div>管理100个及以上粉丝</div>
                                 </div>
                                 <div class="btn">
-                                    <div>取消</div>
+                                    <div class="close">取消</div>
                                     <div>赚取RRT</div>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                 </div>
                                 <div class="btn">
                                     <div class="btn-default" @click="getCoin">确定</div>
-                                    <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ tokenDetail.totalOwner }}</span>）</div>
+                                    <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ amount }}</span>）</div>
                                 </div>
                             </div>
 
@@ -89,9 +89,11 @@ export default {
 		return {
             wxTitle: "通证详情",
             maskShow: false,
-            isPoor: false,
-            to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
-            mark: ''
+            isPoor: true,
+            // to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
+            to_addr: '',
+            mark: '',
+            amount: 0
 		};
     },
     computed: {
@@ -110,21 +112,55 @@ export default {
         nickname() {
             return this.tokenDetail.user && this.tokenDetail.user.pinfo && this.tokenDetail.user.pinfo.nickname;
         },
-        rrt_id() {
-            return this.tokenDetail.rrt_id && this.tokenDetail.rrt_id.substring(0,7);
+        chain_addr() {
+            return !this.tokenDetail.chain_addr && !this.tokenDetail.block_number ? '上链中' : this.tokenDetail.chain_addr;
         },
         withdrawFee() {
             return this.$store.state.fee && this.$store.state.fee.WithdrawFee && this.$store.state.fee.WithdrawFee.amount;
         }
     },
     created() {
+        // 获取详情
         this.$store.dispatch('getTokenDetail', {
             id: this.getDetailId
         }).then(res => {
             this.$store.dispatch('getReward');
         });
+
+        // 获取余额
+        this.$store.dispatch('getBalance', {
+                symbol: 'RRT'
+            }).then(res => {
+            this.amount = res.amount;
+        });
     },
 	methods: {
+        copyAddress() {
+            // 动态创建 input 元素
+            var aux = document.createElement("input");
+
+            // 获得需要复制的内容
+            aux.setAttribute("value", this.chain_addr);
+
+            // 添加到 DOM 元素中
+            document.body.appendChild(aux);
+
+            // 执行选中
+            // 注意: 只有 input 和 textarea 可以执行 select() 方法.
+            aux.select();
+            
+            // 获得选中的内容
+            var content = window.getSelection().toString();
+                
+            // 执行复制命令
+            document.execCommand("copy");
+
+            // 将 input 元素移除
+            document.body.removeChild(aux);
+
+            // 提示
+            alert('已复制')
+        },
 		close() {
 			this.maskShow = false;
         },
@@ -138,10 +174,10 @@ export default {
                 alert('地址不能为空');
                 return;
             }
-            // if(this.withdrawFee > this.tokenDetail.totalOwner) {
-            //     alert('余额不足');
-            //     return;
-            // }
+            if(this.withdrawFee > this.tokenDetail.totalOwner) {
+                alert('余额不足');
+                return;
+            }
             this.$store.dispatch('getWithdraw', {
                 _id: this.getDetailId,
                 to_addr: this.to_addr,

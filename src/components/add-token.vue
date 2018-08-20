@@ -40,7 +40,7 @@
 		</div>
 
 		<div class="footer">
-			<div class="pay-amount">支付：00.00</div>
+			<div class="pay-amount">支付：{{ createFee }}</div>
 			<div class="pay">
                 <div>
                     <div>余额：<span class="warm">{{ detail && detail.amount }}</span></div>
@@ -70,18 +70,26 @@ export default {
         isPoor() {
             return this.detail && this.detail.amount > 500 ? true : false;
         },
-        tokenid() {
-            return this
+        // tokenid() {
+        //     return this.$route.params.id
+        // },
+        createFee() {
+            return this.$store.state.fee && this.$store.state.fee.CreateFee && this.$store.state.fee.CreateFee.amount;
         }
     },
     created() {
-        this.$store.dispatch('getBalance').then(res => {
+        this.$store.dispatch('getBalance', {
+                symbol: 'RRT'
+            }).then(res => {
             this.detail = res;
         });
+        // 获取发布需要支付的数量
+        // 获取费用信息
+        this.$store.dispatch('getInfo');
     },
 	methods: {
         getRRT() {
-            console.log('跳转到2.2.0', this.$route)
+            // console.log('跳转到2.2.0', this.$route)
             this.$router.push({path: `/owerdetail/${this.$store.state.tokenid}`});
         },
         pay() {

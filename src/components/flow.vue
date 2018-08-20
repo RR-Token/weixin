@@ -54,10 +54,12 @@ export default {
     },
     created() {
         this.$store.dispatch('getFlow', {
-            uid: this.userId
+            user: this.userId,
+            token: this.$route.params.tid
         });
     },
     mounted() {
+        console.log('=============', this.$route)
     },
 	methods: {
 		refresh() {

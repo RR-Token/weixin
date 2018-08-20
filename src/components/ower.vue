@@ -6,22 +6,13 @@
         </div>
 		<div class="container">
 			<scroller 
+                v-if="owerList && owerList.length > 0"
 				:on-infinite="infinite"
 				ref="my_scrooler"
 				>
                 <div style="height: 10px;"></div>
-                <!-- KOL的 -->
-                <div v-if="isActive && owerList.length" v-for="(item, index) in owerList" :key="index">
-                    <div class="item" @click="toDetail(item.token._id)">
-                        <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
-                        <div class="name">{{ item.user.pinfo.nickname }}</div>
-                        <div class="rrt">{{ item.token.name }}</div>
-                        <div class="count">持有数量：{{ item.amount }}个</div>
-                    </div>
-                    <div style="height: 10px;"></div>
-                </div>
-                <!-- 我发布的 -->
-                <div v-if="!isActive && selfList.length" v-for="(item, index) in selfList" :key="index">
+                <!-- list -->
+                <div v-for="(item, index) in owerList" :key="index">
                     <div class="item" @click="toDetail(item.token._id)">
                         <div class="photo" :style="'backgroundImage:url('+ item.user.pinfo.headimgurl +')'"></div>
                         <div class="name">{{ item.user.pinfo.nickname }}</div>
@@ -31,7 +22,8 @@
                     <div style="height: 10px;"></div>
                 </div>
 			</scroller>
-            <div v-if="(isActive && owerList && owerList.length == 0) || (!isActive && selfList && selfList.length == 0)" class="no-data">
+            <!-- 无数据展现 -->
+            <div v-else class="no-data">
                 <img src="../assets/no_passport.png" alt="">
                 <div class="tips">发布你的专属通证，更紧密连接你的粉丝</div>
                 <router-link class="router-add" tag="div" :to="{path: '/addToken'}">发布</router-link>
@@ -77,17 +69,23 @@ export default {
             return this.list
         },
         selfList() {
-            console.log(this.list)
             let _arr = this.list && this.list.filter(item => item.user._id === this.userId);
             return _arr;
         }
     },
     created() {
-        this.$store.dispatch('getOwerList', {
-            uid: this.userId
-        })
+        // 默认获取KOL
+        this.getKol();
     },
 	methods: {
+        getKol() {
+            this.$store.dispatch('getOwerList')
+        },
+        getSelf() {
+            this.$store.dispatch('getOwerList', {
+                user: this.userId
+            })
+        },
 		refresh() {
 			console.log('refresh')
 		},
@@ -121,6 +119,7 @@ export default {
         },
         changeTab(b) {
             this.isActive = b;
+            this.isActive ? this.getKol() : this.getSelf();
         }
 	}
 };

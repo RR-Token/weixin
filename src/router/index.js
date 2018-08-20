@@ -58,7 +58,7 @@ export default new Router({
       component: OwerDetail
     },
     {
-      path: '/flow/:uid',
+      path: '/flow/:uid/:tid',
       name: 'Flow',
       component: Flow
     },

@@ -30,7 +30,7 @@ const mutations = {
         state.reward = obj[0];
     },
     setFee(state, obj) {
-        // 因为现阶段只返回了一种方式
+        // 获取费用信息
         state.fee = obj;
     },
     setTokenId(state, obj) {
