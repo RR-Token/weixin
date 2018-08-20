@@ -46,8 +46,10 @@
                     <div>
 
                         <div class="top">
-                            <span v-if="isPoor">您的RRT不足</span>
-                            <span v-else>提币到钱包</span>
+                            <span v-if="!isReward && isPoor">您的RRT不足</span>
+                            <span v-else-if="!isReward && !isPoor">提币到钱包</span>
+                            <span v-else-if="num==0">今日领取完毕</span>
+                            <span v-else>恭喜！</span>
                         </div>
                         <div class="bottom">
                             <div class="msg1" v-if="isPoor">
@@ -56,19 +58,33 @@
                                     <div>管理100个及以上粉丝</div>
                                 </div>
                                 <div class="btn">
-                                    <div class="close">取消</div>
-                                    <div>赚取RRT</div>
+                                    <div @click="close">取消</div>
+                                    <router-link tag="div" :to="{path: `/owerdetail/${getDetailId}`}">赚取RRT</router-link>
                                 </div>
                             </div>
 
-                            <div class="msg2" v-else>
+                            <!-- 余额充足 -->
+                            <div class="msg2"  v-if="!isReward && !isPoor">
                                 <div class="form">
                                     <input v-model="to_addr" type="text" placeholder="请输入收款人钱包地址">
                                     <input v-model="mark" type="text" placeholder="请输入备注">
                                 </div>
-                                <div class="btn">
+                                <!-- <div class="btn">
                                     <div class="btn-default" @click="getCoin">确定</div>
                                     <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ amount }}</span>）</div>
+                                </div> -->
+                                <div class="btn">
+                                    <div class="btn-default" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
+                                    <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ amount }}</span>）</div>
+                                </div>
+                            </div>
+
+                            <!-- 已经领取过的提示 -->
+                            <div v-else-if="isReward" class="msg2 msg2-1">
+                                <div v-if="num==0">请明日再来领取：）</div>
+                                <div v-else>您获得了{{ num }}个{{ tokenDetail.name }}通证</div>
+                                <div class="btn">
+                                    <div class="btn-default" @click="close">确定</div>
                                 </div>
                             </div>
 
@@ -88,8 +104,8 @@ export default {
 	data() {
 		return {
             wxTitle: "通证详情",
+            isReward: false,
             maskShow: false,
-            isPoor: true,
             // to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
             to_addr: '',
             mark: '',
@@ -117,6 +133,9 @@ export default {
         },
         withdrawFee() {
             return this.$store.state.fee && this.$store.state.fee.WithdrawFee && this.$store.state.fee.WithdrawFee.amount;
+        },
+        isPoor() {
+            return this.withdrawFee > this.amount ? true : false;
         }
     },
     created() {
@@ -169,12 +188,17 @@ export default {
         },
         
         getCoin() {
+            // 如果余额不足，引导去赚取token的页面
+            if(this.isPoor) {
+                // this.$route.push({path: ``})
+                return;
+            }
             // 地址不能为空
             if(this.to_addr === '') {
                 alert('地址不能为空');
                 return;
             }
-            if(this.withdrawFee > this.tokenDetail.totalOwner) {
+            if(this.isPoor) {
                 alert('余额不足');
                 return;
             }

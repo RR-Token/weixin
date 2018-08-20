@@ -72,7 +72,19 @@
                         <span v-else>恭喜！</span>
                     </div>
                     <div class="bottom">
-                        <div class="msg2" v-if="!isReward">
+                        <!-- 余额不足 -->
+                        <div class="msg1" v-if="isPoor">
+                            <div class="tips">
+                                <div>持有500 RRT以上的账号才能</div>
+                                <div>管理100个及以上粉丝</div>
+                            </div>
+                            <div class="btn">
+                                <div @click="close">取消</div>
+                                <router-link tag="div" :to="{path: `/owerdetail/${getDetailId}`}">赚取RRT</router-link>
+                            </div>
+                        </div>
+                        <!-- 余额充足 -->
+                        <div class="msg2" v-if="!isReward && !isPoor">
                             <div class="form">
                                 <input type="text" placeholder="请输入收款人钱包地址" v-model="to_addr">
                                 <input type="text" placeholder="请输入备注" v-model="mark">
@@ -84,7 +96,7 @@
                         </div>
 
                         <!-- 已经领取过的提示 -->
-                        <div v-else class="msg2 msg2-1">
+                        <div v-else-if="isReward" class="msg2 msg2-1">
                             <div v-if="num==0">请明日再来领取：）</div>
                             <div v-else>您获得了{{ num }}个{{ tokenDetail.name }}通证</div>
                             <div class="btn">
@@ -205,7 +217,7 @@ export default {
         getCoin() {
             // 如果余额不足，引导去赚取token的页面
             if(this.isPoor) {
-                this.$route.push({path: ``})
+                // this.$route.push({path: ``})
                 return;
             }
             // 地址不能为空
