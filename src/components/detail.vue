@@ -67,7 +67,9 @@
                             <div class="msg2"  v-if="!isReward && !isPoor">
                                 <div class="form">
                                     <input v-model="to_addr" type="text" placeholder="请输入收款人钱包地址">
-                                    <input v-model="mark" type="text" placeholder="请输入备注">
+                                    <!-- <input v-model="mark" type="text" placeholder="请输入备注"> -->
+                                    <div style="margin-top:20px;text-align: left;">已选：{{ rangeValue + ' ' + tokenDetail.symbol}}</div>
+                                    <input type="range" class="range" min="0" :max="amount" v-model="rangeValue"/>
                                 </div>
                                 <!-- <div class="btn">
                                     <div class="btn-default" @click="getCoin">确定</div>
@@ -109,7 +111,8 @@ export default {
             // to_addr: '0x323Ded3940D4018eC4a54540677F7Ea76B1342DB',
             to_addr: '',
             mark: '',
-            amount: 0
+            amount: 0,
+            rangeValue: 0
 		};
     },
     computed: {
@@ -325,6 +328,10 @@ export default {
                                         margin-top: 24px;
                                     }
                                 }
+                                .range {
+                                    padding: 0;
+                                    margin-top: 0!important;
+                                }
                             }
                             .btn {
                                 .light {
@@ -349,7 +356,7 @@ export default {
                                     color: #ffffff;
                                     font-size: 16px;
                                     width: 46.6667%;
-                                    margin: 30px auto 21.5px;
+                                    margin: 20px auto 15.5px;
                                 }
                                 .tips {
                                     font-size: 13px;

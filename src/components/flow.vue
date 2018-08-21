@@ -17,7 +17,7 @@
                                 <div class="rich">
                                     <span class="green" v-if="userId !== item.from_user._id">转入</span>
                                     <span class="red" v-else>转出</span>
-                                    <span>{{ item.amount }} TAT</span>
+                                    <span>{{ item.amount }} {{ item.token.symbol }}</span>
                                 </div>
                             </div>
                         </div>

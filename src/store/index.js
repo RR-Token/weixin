@@ -18,6 +18,8 @@ let authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid
 // 缓存token，后续修改浏览器url需要用到
 let _token = window.location.search.split('=')[1];
 _token && _token.length > 0 && window.localStorage.setItem('token', window.location.search.split('=')[1]);
+// _token && _token.length > 0 && window.localStorage.setItem('token', 'eyJhbGciOiJIUzltNlslnR5ccl6lkpXVCJg.EyJfaWQiOiltYJY50WNINmJkOGVkYzAwMGY4YzltZGMILCJpYXQIOjEtMzQ4NTk2NzkslmV4cC16MTUzNzQtMTY30XO.QwwessNYnEacpAFgJcJnXmY-61vog5F6TgFyEeklkc4');
+// _token && _token.length > 0 && window.localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjVkZGMxOGE0ODMzOTAwMGY5Y2ZiMzIiLCJpYXQiOjE1MzM0MzgwNDUsImV4cCI6MTUzNjAzMDA0NX0.pYaRkOMkGQFV7VEP-ilDoFh-lA0dpbc7pVmlSxKViSI');
 
 // token存在时说明已经授权过了
 // alert(typeof window.localStorage.getItem('token').toString());

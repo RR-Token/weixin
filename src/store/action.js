@@ -154,9 +154,31 @@ export const addToken = ({commit, state}, params) => {
 }
 
 // 获取我持有的
-export const getOwerList = ({commit, state}, params) => {
+export const getOwerList = ({dispatch, commit, state}, params) => {
     return new Promise((resolve, reject) => {
         axios.get(`${host}/balance`, {
+            headers: {
+                'Authorization': 'Bearer ' + state.token
+            },
+            params: params
+        }).then(res => {
+            res.data.forEach(item => {
+                dispatch('getOthers', {
+                    uid: item.token.user
+                }).then(res => {
+                    item.user = res
+                })
+            });
+            commit('getOwerList', res.data);
+            resolve();
+        })
+    });
+}
+
+// 获取我自己发布的
+export const _getOwerList = ({commit, state}, params) => {
+    return new Promise((resolve, reject) => {
+        axios.get(`${host}/balance/byOwner/${params.user}`, {
             headers: {
                 'Authorization': 'Bearer ' + state.token
             },

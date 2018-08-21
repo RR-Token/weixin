@@ -87,7 +87,9 @@
                         <div class="msg2" v-if="!isReward && !isPoor">
                             <div class="form">
                                 <input type="text" placeholder="请输入收款人钱包地址" v-model="to_addr">
-                                <input type="text" placeholder="请输入备注" v-model="mark">
+                                <!-- <input type="text" placeholder="请输入备注" v-model="mark"> -->
+                                <div style="margin-top:20px;text-align: left;">已选：{{ rangeValue + ' ' + tokenDetail.symbol}}</div>
+                                <input type="range" class="range" min="0" :max="yue" v-model="rangeValue"/>
                             </div>
                             <div class="btn">
                                 <div class="btn-default" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
@@ -126,7 +128,8 @@ export default {
             to_addr: '',
             mark: '',
             amount: 0,
-            yue: 0
+            yue: 0,
+            rangeValue: 0
 		};
     },
     computed: {
@@ -539,6 +542,10 @@ export default {
                                 &:last-child {
                                     margin-top: 24px;
                                 }
+                            }
+                            .range {
+                                padding: 0;
+                                margin-top: 0!important;
                             }
                         }
                         .btn {

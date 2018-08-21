@@ -79,10 +79,12 @@ export default {
     },
 	methods: {
         getKol() {
-            this.$store.dispatch('getOwerList')
+            this.$store.dispatch('getOwerList', {
+                user: this.userId
+            })
         },
         getSelf() {
-            this.$store.dispatch('getOwerList', {
+            this.$store.dispatch('_getOwerList', {
                 user: this.userId
             })
         },
