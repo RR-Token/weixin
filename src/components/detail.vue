@@ -10,10 +10,10 @@
 				</div>
                 
                 <div class="info">
-                    <div class="number" @click="copyAddress">区块号：{{ chain_addr }}</div>
+                    <div class="number" @click="copyAddress">地址：{{ chain_addr }}</div>
                     <div class="details">
                         <div>
-                            <div>地&nbsp;&nbsp;&nbsp;&nbsp;址：<span>{{ tokenDetail.block_number }}...</span></div>
+                            <div>区&nbsp;块&nbsp;号&nbsp;：<span>{{ tokenDetail.block_number }}...</span></div>
                             <div>总发行量：<span>{{ tokenDetail.supply }}</span></div>
                         </div>
                         <div>
@@ -27,7 +27,7 @@
                     <div @click="getMoney"></div>
                     <!-- <div></div> -->
                     <router-link tag="div" :to="{path: '/qrcode/', query:{tid: getDetailId, uid: userInfo && userInfo._id}}"></router-link>
-                    <div></div>
+                    <router-link tag="div" :to="{path: `/addEnvelope/${tokenDetail._id}`}"></router-link>
                 </div>
 
                 <div class="desc">
@@ -64,19 +64,19 @@
                             </div>
 
                             <!-- 余额充足 -->
-                            <div class="msg2"  v-if="!isReward && !isPoor">
+                            <div class="msg2" v-else-if="!isReward">
                                 <div class="form">
                                     <input v-model="to_addr" type="text" placeholder="请输入收款人钱包地址">
                                     <!-- <input v-model="mark" type="text" placeholder="请输入备注"> -->
                                     <div style="margin-top:20px;text-align: left;">已选：{{ rangeValue + ' ' + tokenDetail.symbol}}</div>
-                                    <input type="range" class="range" min="0" :max="amount" v-model="rangeValue"/>
+                                    <input type="range" class="range" min="0" :max="processV" v-model="rangeValue"/>
                                 </div>
                                 <!-- <div class="btn">
                                     <div class="btn-default" @click="getCoin">确定</div>
                                     <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ amount }}</span>）</div>
                                 </div> -->
                                 <div class="btn">
-                                    <div class="btn-default" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
+                                    <div :class="['btn-default', {'no-range': processV == 0}]" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
                                     <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ amount }}</span>）</div>
                                 </div>
                             </div>
@@ -112,7 +112,8 @@ export default {
             to_addr: '',
             mark: '',
             amount: 0,
-            rangeValue: 0
+            rangeValue: 0,
+            processV: 0
 		};
     },
     computed: {
@@ -184,15 +185,21 @@ export default {
             alert('已复制')
         },
 		close() {
-			this.maskShow = false;
+            this.maskShow = false;
         },
         getMoney() {
             this.maskShow = true;
+
+            // 获取余额
+            this.$store.dispatch('getBalance', {
+                symbol: this.tokenDetail.symbol
+            }).then(res => {
+                this.processV = res.amount;
+            });
         },
-        
         getCoin() {
             // 如果余额不足，引导去赚取token的页面
-            if(this.isPoor) {
+            if(this.processV == 0) {
                 // this.$route.push({path: ``})
                 return;
             }
@@ -208,8 +215,8 @@ export default {
             this.$store.dispatch('getWithdraw', {
                 _id: this.getDetailId,
                 to_addr: this.to_addr,
-                amount: this.withdrawFee,
-                // amount: 1,
+                // amount: this.withdrawFee,
+                amount: this.processV,
                 mark: this.mark
             }).then(res => {
                 console.log(res)
@@ -358,6 +365,9 @@ export default {
                                     width: 46.6667%;
                                     margin: 20px auto 15.5px;
                                 }
+                                .no-range {
+                                    background-color: #cecece;
+                                }
                                 .tips {
                                     font-size: 13px;
                                     color: #9CA4B1;
@@ -409,6 +419,12 @@ export default {
                 font-size: 15px;
                 color: #ffffff;
                 margin-top: 20px;
+                text-align: left;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                padding: 0 10px;
+                box-sizing: border-box;
             }
             .details {
                 display: flex;

@@ -12,6 +12,9 @@ import Flow from '@/components/flow'
 import PersonCenter from '@/components/person-center'
 import Helper from '@/components/helper'
 import Poster from '@/components/poster'
+import AddEnvelope from '@/components/add-envelope'
+import Envelope from '@/components/envelope'
+import OpenEnvelope from '@/components/open-envelope'
 
 Vue.use(Router)
 
@@ -76,6 +79,21 @@ export default new Router({
       path: '/poster',
       name: 'Poster',
       component: Poster
+    },
+    {
+      path: '/addEnvelope/:id',
+      name: 'AddEnvelope',
+      component: AddEnvelope
+    },
+    {
+      path: '/envelope',
+      name: 'Envelope',
+      component: Envelope
+    },
+    {
+      path: '/openEnvelope',
+      name: 'OpenEnvelope',
+      component: OpenEnvelope
     }
   ]
 })

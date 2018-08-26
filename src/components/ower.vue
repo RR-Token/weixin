@@ -1,9 +1,9 @@
 <template>
 	<div class="hello">
-        <div class="tab">
+        <!-- <div class="tab">
             <div :class="[{'actived': isActive}]" @click="changeTab(true)">KOL的</div>
             <div :class="[{'actived': !isActive}]" @click="changeTab(false)">我发布的</div>
-        </div>
+        </div> -->
 		<div class="container">
 			<scroller 
                 v-if="owerList && owerList.length > 0"
@@ -56,22 +56,19 @@ export default {
 			wxTitle: "我持有的",
             count: 0,
             isActive: true,
+            owerList: null
 		};
     },
     computed: {
         userId() {
-            return this.$route.params.uid;
+            return this.$store.state.loginUser && this.$store.state.loginUser._id;
         },
-        list() {
-            return this.$store.state.owerList;
-        },
-        owerList() {
-            return this.list
-        },
-        selfList() {
-            let _arr = this.list && this.list.filter(item => item.user._id === this.userId);
-            return _arr;
-        }
+        // owerList() {
+        //     console.log('owerlist>>>>>', this.$store.state.owerList);
+        //     return this.isActive ? 
+        //         this.$store.state.owerList&&this.$store.state.owerList.filter(item => item._id != this.userId) : 
+        //         this.$store.state.owerList;
+        // }
     },
     created() {
         // 默认获取KOL
@@ -81,12 +78,17 @@ export default {
         getKol() {
             this.$store.dispatch('getOwerList', {
                 user: this.userId
-            })
+            }).then(res => {
+                // 过滤掉自己
+                this.owerList = res.filter(item => item._id != this.userId);
+            });
         },
         getSelf() {
             this.$store.dispatch('_getOwerList', {
                 user: this.userId
-            })
+            }).then(res => {
+                this.owerList = res;
+            });
         },
 		refresh() {
 			console.log('refresh')
@@ -121,6 +123,7 @@ export default {
         },
         changeTab(b) {
             this.isActive = b;
+            alert(this.isActive)
             this.isActive ? this.getKol() : this.getSelf();
         }
 	}
@@ -157,7 +160,8 @@ export default {
         }
     }
 	.container {
-		height: calc(100vh - 49px - 44px);
+		// height: calc(100vh - 49px - 44px);
+		height: calc(100vh - 49px);
 		background-color: rgba(242,244,248,1);
 		overflow: hidden;
 		position: relative;

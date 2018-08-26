@@ -4,10 +4,10 @@
 		<div class="container">
 				<!-- :on-infinite="infinite" -->
 			<scroller  
-                v-if="tokenList"
 				ref="my_scrooler"
 				>
-				<div v-for="(item, index) in tokenList" :key="index" @click="toDetail(item._id)">
+                <!-- <div class="v-token" @click="copyAddress">{{getToken}}</div> -->
+				<div v-if="tokenList" v-for="(item, index) in tokenList" :key="index" @click="toDetail(item._id)">
                     <div style="height: 10px"></div>
                     <div class="item">
                         <div>
@@ -23,13 +23,14 @@
                     </div>
                     <div style="height: 6px"></div>
 				</div>
+                <div v-if="tokenList.length == 0" class="no-data">
+                    <img src="../assets/no_passport.png" alt="">
+                    <div class="tips">发布你的专属通证，更紧密连接你的粉丝</div>
+                    <!-- <router-link class="router-add" tag="div" :to="{path: '/addToken', query:{tid: detail && detail.id}}">发布</router-link> -->
+                    <router-link class="router-add" tag="div" :to="{path: '/addToken', query:{tid: detail && detail.id}}">发布</router-link>
+                </div>
 			</scroller>
-            <router-link tag="div" :to="{path: '/addToken'}" class="btn-add">发布</router-link>
-            <div v-if="tokenList.length == 0" class="no-data">
-                <img src="../assets/no_passport.png" alt="">
-                <div class="tips">发布你的专属通证，更紧密连接你的粉丝</div>
-                <router-link class="router-add" tag="div" :to="{path: '/addToken'}">发布</router-link>
-            </div>
+                <router-link v-if="tokenList.length > 0" tag="div" :to="{path: '/addToken', query:{tid: detail && detail.id}}" class="btn-add">发布</router-link>
 		</div>
 
 		<div class="footer">
@@ -61,6 +62,9 @@ export default {
 		};
     },
     computed: {
+        detail() {
+            return this.$store.state.addToken;
+        },
         getUserId() {
             return this.$store.state.loginUser._id;
         },
@@ -71,7 +75,36 @@ export default {
             return this.$store.state.tokenList || [];
         }
     },
+    created() {
+        this.$store.dispatch('getBalance')
+    },
 	methods: {
+        copyAddress() {
+            // 动态创建 input 元素
+            var aux = document.createElement("input");
+
+            // 获得需要复制的内容
+            aux.setAttribute("value", this.getToken);
+
+            // 添加到 DOM 元素中
+            document.body.appendChild(aux);
+
+            // 执行选中
+            // 注意: 只有 input 和 textarea 可以执行 select() 方法.
+            aux.select();
+            
+            // 获得选中的内容
+            var content = window.getSelection().toString();
+                
+            // 执行复制命令
+            document.execCommand("copy");
+
+            // 将 input 元素移除
+            document.body.removeChild(aux);
+
+            // 提示
+            alert('已复制')
+        },
         removeStore() {
             window.localStorage.removeItem('token');
             alert('清除缓存:'+window.localStorage.getItem('token'))
@@ -113,6 +146,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
+    .v-token {
+            background: gainsboro;
+            word-break: break-all;
+            padding: 5px;
+    }
     .remoce-catch {
         padding: 0 15px;
         color: red;

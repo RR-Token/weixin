@@ -84,15 +84,15 @@
                             </div>
                         </div>
                         <!-- 余额充足 -->
-                        <div class="msg2" v-if="!isReward && !isPoor">
+                        <div class="msg2" v-else-if="!isReward">
                             <div class="form">
                                 <input type="text" placeholder="请输入收款人钱包地址" v-model="to_addr">
                                 <!-- <input type="text" placeholder="请输入备注" v-model="mark"> -->
                                 <div style="margin-top:20px;text-align: left;">已选：{{ rangeValue + ' ' + tokenDetail.symbol}}</div>
-                                <input type="range" class="range" min="0" :max="yue" v-model="rangeValue"/>
+                                <input type="range" class="range" min="0" :max="processV" v-model="rangeValue"/>
                             </div>
                             <div class="btn">
-                                <div class="btn-default" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
+                                <div :class="['btn-default', {'no-range': processV == 0}]" @click="getCoin">{{ isPoor ? '去获取RRT' : '确定'}}</div>
                                 <div class="tips">本次转出消耗 {{ withdrawFee }} RRT（<span class="light">余额{{ yue }}</span>）</div>
                             </div>
                         </div>
@@ -129,7 +129,8 @@ export default {
             mark: '',
             amount: 0,
             yue: 0,
-            rangeValue: 0
+            rangeValue: 0,
+            processV: 0
 		};
     },
     computed: {
@@ -206,6 +207,13 @@ export default {
         getMoney() {
             this.isReward = false;
             this.maskShow = true;
+
+            // 获取余额
+            this.$store.dispatch('getBalance', {
+                symbol: this.tokenDetail.symbol
+            }).then(res => {
+                this.processV = res.amount;
+            });
         },
         getRewardMoney() {
             this.isReward = true;
@@ -219,7 +227,7 @@ export default {
         },
         getCoin() {
             // 如果余额不足，引导去赚取token的页面
-            if(this.isPoor) {
+            if(this.processV == 0) {
                 // this.$route.push({path: ``})
                 return;
             }
@@ -235,8 +243,8 @@ export default {
             this.$store.dispatch('getWithdraw', {
                 _id: this.getDetailId,
                 to_addr: this.to_addr,
-                amount: this.withdrawFee,
-                // amount: 1,
+                // amount: this.withdrawFee,
+                amount: this.processV,
                 mark: this.mark
             }).then(res => {
                 // 更新余额
@@ -571,7 +579,10 @@ export default {
                                 color: #ffffff;
                                 font-size: 16px;
                                 width: 46.6667%;
-                                margin: 30px auto 21.5px;
+                                margin: 10px auto 21.5px;
+                            }
+                            .no-range {
+                                background-color: #cecece;
                             }
                             .tips {
                                 font-size: 13px;

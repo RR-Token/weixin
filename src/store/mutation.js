@@ -1,8 +1,4 @@
 const mutations = {
-    // global，缓存token
-    getAuth(state, token) {
-        state.token = token;
-    },
     // 获取用户信息
     getUser(state, obj) {
         state.loginUser = obj;
@@ -20,7 +16,7 @@ const mutations = {
         state.likers = obj
     },
     addToken(state, obj) {
-        console.log(obj);
+        state.addToken = obj
     },
     getFlow(state, obj) {
         state.flow = obj;

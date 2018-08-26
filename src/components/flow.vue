@@ -22,7 +22,7 @@
                             </div>
                         </div>
                         <div>
-                            {{ item.createdAt.substring(0, 16).replace('T', ' ') }}
+                            {{ item.createdAt}}
                         </div>
                     </div>
                 </div>
@@ -41,21 +41,34 @@ export default {
 	name: "Likers",
 	data() {
 		return {
-			wxTitle: "流水明细",
+            wxTitle: "流水明细",
+            list: []
 		};
     },
     computed: {
         userId() {
             return this.$route.params.uid;
         },
-        list() {
-            return this.$store.state.flow;
-        }
+        // list() {
+        //     return this.$store.state && this.$store.state.flow;
+        // }
     },
     created() {
         this.$store.dispatch('getFlow', {
             user: this.userId,
             token: this.$route.params.tid
+        }).then(res => {
+            res.forEach(item => {
+                // 转为本地时间
+                let location_date = new Date(item.createdAt);
+                item.createdAt = location_date.getFullYear() + '-' 
+                    + (location_date.getMonth() + 1) + '-' 
+                    + location_date.getDate() + ' ' 
+                    + location_date.getHours() + ':' 
+                    + location_date.getMinutes() + ':' 
+                    + location_date.getSeconds(); 
+            });
+            this.list = res;
         });
     },
     mounted() {

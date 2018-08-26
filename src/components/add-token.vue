@@ -19,15 +19,15 @@
                 <div class="form">
                     <div>
                         <div class="tips">代币全称（例 RenRenToken)</div>
-                        <input type="text" v-model="name" placeholder="支持英文、数字，区分大小写">
+                        <input type="text" v-model="name" placeholder="支持英文、数字，区分大小写" @change="regIptV" />
                     </div>
                     <div>
                         <div class="tips">代币简称（例 RRT）</div>
-                        <input type="text" v-model="symbol" placeholder="支持英文、数字，区分大小写">
+                        <input type="text" v-model="symbol" placeholder="支持英文、数字，区分大小写" @change="regIptV" />
                     </div>
                     <div>
                         <div class="tips">发行总量（例 10，000，000）</div>
-                        <input type="text" v-model="supply" placeholder="请输入大于0的整数">
+                        <input type="text" v-model="supply" placeholder="请输入大于0的整数" @change="regIptV" />
                     </div>
                     <!-- <div>
                         <div class="tips">小数位数（本货币支持的最大小数位）</div>
@@ -46,7 +46,8 @@
                     <div>余额：<span class="warm">{{ detail && detail.amount }}</span></div>
                     <div :class="['hide', {'show': !isPoor}]">余额不足</div>
                 </div>
-                <div v-if="isPoor" @click="pay">支付并发布</div>
+                <div v-if="isPoor && active" @click="pay">支付并发布</div>
+                <div v-else-if="isPoor && !active" class="no-active">支付并发布</div>
                 <div v-else @click="getRRT">我要赚RRT</div>
             </div>
 		</div>
@@ -63,10 +64,14 @@ export default {
             name: '',
             symbol: '',
             supply: '',
-            detail: null
+            // detail: null,
+            active: false
 		};
     },
     computed: {
+        detail() {
+            return this.$store.state.addToken;
+        },
         isPoor() {
             return this.detail && this.detail.amount > 500 ? true : false;
         },
@@ -78,11 +83,11 @@ export default {
         }
     },
     created() {
-        this.$store.dispatch('getBalance', {
-                symbol: 'RRT'
-            }).then(res => {
-            this.detail = res;
-        });
+        // this.$store.dispatch('getBalance', {
+        //         symbol: 'RRT'
+        //     }).then(res => {
+        //     this.detail = res;
+        // });
         // 获取发布需要支付的数量
         // 获取费用信息
         this.$store.dispatch('getInfo');
@@ -110,8 +115,18 @@ export default {
                 }
             })
 
+        },
+        regIptV() {
+            let reg1 = /^[a-zA-Z0-9]{3,10}$/
+                ,reg2 = /^[a-zA-Z0-9]{0,120}$/
+                ,reg3 = /^[1-9]*$/;
+            if(reg1.test(this.name) && reg2.test(this.symbol) && reg3.test(this.supply)) {
+                this.active = true;
+            } else {
+                this.active = false;
+            }
         }
-	}
+    }
 };
 </script>
 
@@ -197,6 +212,9 @@ export default {
             color: #333333;
         }
         .pay {
+            .no-active {
+                background: #cecece!important;
+            }
             display: flex;
             align-items: center;
             >div {

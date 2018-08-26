@@ -55,7 +55,8 @@
                 <div>
 
                     <div class="top">
-                        <span>恭喜！</span>
+                        <span v-if="num==0">今日领取完毕</span>
+                        <span v-else>恭喜！</span>
                     </div>
                     <div class="bottom">
                         <div class="msg2 msg2-1">
